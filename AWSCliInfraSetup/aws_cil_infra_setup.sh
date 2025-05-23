@@ -12,7 +12,8 @@ net_mask_vpc="26"
 cidr_block="$ip/$net_mask_vpc"	# have 64 total private IPs
 region=us-west-2
 az=us-west-2a
-igw_name=MY-IGW
+igw_name="MY-IGW"
+rtb_name="Public Route Table"
 echo "VPC CIDR BLOCK is set to: $cidr_block"
 # Region can be specified in the aws config file, which will be us-west-2 by default
 
@@ -64,6 +65,20 @@ if [[ -n "$vpc_id" ]]; then
 	aws ec2 delete-subnet --region "$region" --subnet-id "$priv_sub1_id" && echo "private subnet1 deleted!"
     fi
     # --------------------------------------------------------------------------
+    # Delete custom route tables -- Pay attention to the rtb has dependencies and cannot be deleted.(the order to delete it)
+    rtb_ids=$(aws ec2 describe-route-tables \
+		  --region "$region" \
+		  --filters "Name=vpc-id,Values=$vpc_id" \
+		  --filters "Name=tag:Name,Values=$rtb_name" \
+		  --query "RouteTables[*].RouteTableId" \
+		  --output text)
+
+    for rtb_id in $rtb_ids; do
+	echo "Deleting Route Table: $rtb_id"
+	aws ec2 delete-route-table --region "$region" --route-table-id "$rtb_id" && \
+	    echo "RouteTable ID: $rtb_id deleted!"
+    done
+    # --------------------------------------------------------------------------
     # delete the VPC at the end.
     aws ec2 delete-vpc --vpc-id "$vpc_id" && echo "The old VPC named $vpc_name has been deleted!"
 else
@@ -86,32 +101,32 @@ aws ec2 modify-vpc-attribute \
 # TODO: We can assign the number of Public Subnets
 net_mask_pubsub1="27"
 cidr_block_pubsub1="$ip/$net_mask_pubsub1"
-pub_sub1=$(aws ec2 create-subnet \
+pub_sub1_id=$(aws ec2 create-subnet \
   --vpc-id $vpc_id \
   --cidr-block $cidr_block_pubsub1 \
   --availability-zone $az \
   --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=\"$pub_sub1_name\"}]" \
   --query 'Subnet.SubnetId' \
   --output text)
-echo "Public Subnet created: $pub_sub1"
+echo "Public Subnet created: $pub_sub1_id"
 
 # Enable Public IP on launch
 aws ec2 modify-subnet-attribute \
-    --subnet-id $pub_sub1 \
+    --subnet-id $pub_sub1_id \
     --map-public-ip-on-launch
 
 # Create private Subnet
 net_mask_privsub1="27"
 start_ip_privsub="10.0.0.32"
 cidr_block_privsub1="$start_ip_privsub/$net_mask_privsub1"
-priv_sub1=$(aws ec2 create-subnet \
+priv_sub1_id=$(aws ec2 create-subnet \
   --vpc-id $vpc_id \
   --cidr-block $cidr_block_privsub1 \
   --availability-zone $az \
   --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=\"$priv_sub1_name\"}]" \
   --query 'Subnet.SubnetId' \
   --output text)
-echo "Private Subnet created: $priv_sub1"
+echo "Private Subnet created: $priv_sub1_id"
 
 ##########################################################################################
 # Creating an IGW
@@ -119,11 +134,26 @@ igwid=$(aws ec2 create-internet-gateway \
 	--tag-specifications "ResourceType=internet-gateway,Tags=[{Key=Name,Value=\"$igw_name\"}]" \
 --query 'InternetGateway.InternetGatewayId' \
 --output text)
-
 echo "Internet Gateway created: $igwid"
 
 # attaching the IGW to the VPC
 aws ec2 attach-internet-gateway --internet-gateway-id $igwid --vpc-id $vpc_id
-  
 echo "IGW attached: $igwid"
 
+##########################################################################################
+# Create Route Table
+rtbpubid1=$(aws ec2 create-route-table \
+    --vpc-id $vpc_id \
+    --tag-specifications "ResourceType=route-table,Tags=[{Key=Name,Value=\"$rtb_name\"}]" \
+    --query 'RouteTable.RouteTableId' \
+    --output text)
+
+# Create a Route
+aws ec2 create-route \
+    --route-table-id $rtbpubid1 \
+    --destination-cidr-block 0.0.0.0/0 \
+    --gateway-id $igwid
+
+# Subnet Associations
+aws ec2 associate-route-table --subnet-id $pub_sub1_id --route-table-id $rtbpubid1
+echo "Public route table created and associated."
