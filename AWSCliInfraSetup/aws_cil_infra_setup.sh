@@ -25,7 +25,7 @@ echo "VPC ID from query: $vpc_id"
 if [[ -n "$vpc_id" ]]; then
     echo "There is already existing VPC named $vpc_name"
     # TODO:detach and delete everything that the vpc is using, then delete the VPC
-    # Delete subnets if any exist.
+    # Delete subnets if any exist. (Consider using for loop, now hard coded)
     pub_sub1_id=$(aws ec2 describe-subnets \
 		     --region "$region" \
 		     --filters "Name=vpc-id,Values=$vpc_id" \
@@ -34,9 +34,21 @@ if [[ -n "$vpc_id" ]]; then
 		     --output text)
     echo "public subnet1 ID: $pub_sub1_id"
     if [[ -n "$pub_sub1_id" ]]; then # if the public subnet1 exists
-	echo "Deleting Subnet: $pub_sub1_id"
+	echo "Deleting Public Subnet: $pub_sub1_id"
 	aws ec2 delete-subnet --region "$region" --subnet-id "$pub_sub1_id" && echo "public subnet1 deleted!"
     fi
+    priv_sub1_id=$(aws ec2 describe-subnets \
+		     --region "$region" \
+		     --filters "Name=vpc-id,Values=$vpc_id" \
+		     --filters "Name=tag:Name,Values=$priv_sub1_name" \
+		     --query "Subnets[*].SubnetId" \
+		     --output text)
+    echo "private subnet1 ID: $priv_sub1_id"
+    if [[ -n "$priv_sub1_id" ]]; then # if the public subnet1 exists
+	echo "Deleting Private Subnet: $priv_sub1_id"
+	aws ec2 delete-subnet --region "$region" --subnet-id "$priv_sub1_id" && echo "private subnet1 deleted!"
+    fi
+    # delete the VPC at the end.
     aws ec2 delete-vpc --vpc-id "$vpc_id" && echo "The old VPC named $vpc_name has been deleted!"
 else
     echo "No existing VPC named $vpc_name"
@@ -50,7 +62,6 @@ vpc_id=$(aws ec2 create-vpc \
 echo "VPC created: $vpc_id"
 
 # Enable DNS Hostnames
-
 aws ec2 modify-vpc-attribute \
    --vpc-id $vpc_id \
    --enable-dns-hostnames "{\"Value\":true}"
@@ -66,7 +77,6 @@ pub_sub1=$(aws ec2 create-subnet \
   --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=\"$pub_sub1_name\"}]" \
   --query 'Subnet.SubnetId' \
   --output text)
-
 echo "Public Subnet created: $pub_sub1"
 
 # Enable Public IP on launch
@@ -85,7 +95,4 @@ priv_sub1=$(aws ec2 create-subnet \
   --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=\"$priv_sub1_name\"}]" \
   --query 'Subnet.SubnetId' \
   --output text)
-
 echo "Private Subnet created: $priv_sub1"
-
-
