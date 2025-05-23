@@ -12,6 +12,7 @@ net_mask_vpc="26"
 cidr_block="$ip/$net_mask_vpc"	# have 64 total private IPs
 region=us-west-2
 az=us-west-2a
+igw_name=MY-IGW
 echo "VPC CIDR BLOCK is set to: $cidr_block"
 # Region can be specified in the aws config file, which will be us-west-2 by default
 
@@ -25,6 +26,20 @@ echo "VPC ID from query: $vpc_id"
 if [[ -n "$vpc_id" ]]; then
     echo "There is already existing VPC named $vpc_name"
     # TODO:detach and delete everything that the vpc is using, then delete the VPC
+    # --------------------------------------------------------------------------
+    # Detach and delete Internet Gateways
+    igw_ids=$(aws ec2 describe-internet-gateways \
+		  --region "$region" \
+		  --filters "Name=attachment.vpc-id,Values=$vpc_id" \
+		  --filters "Name=tag:Name,Values=$igw_name" \
+		  --query "InternetGateways[*].InternetGatewayId" \
+		  --output text)
+    for igw_id in $igw_ids; do
+	echo "Detaching and deleting IGW: $igw_id"
+	aws ec2 detach-internet-gateway --region "$region" --internet-gateway-id "$igw_id" --vpc-id "$vpc_id"
+	aws ec2 delete-internet-gateway --region "$region" --internet-gateway-id "$igw_id" && echo "IGW deleted!"
+    done
+    # --------------------------------------------------------------------------
     # Delete subnets if any exist. (Consider using for loop, now hard coded)
     pub_sub1_id=$(aws ec2 describe-subnets \
 		     --region "$region" \
@@ -48,6 +63,7 @@ if [[ -n "$vpc_id" ]]; then
 	echo "Deleting Private Subnet: $priv_sub1_id"
 	aws ec2 delete-subnet --region "$region" --subnet-id "$priv_sub1_id" && echo "private subnet1 deleted!"
     fi
+    # --------------------------------------------------------------------------
     # delete the VPC at the end.
     aws ec2 delete-vpc --vpc-id "$vpc_id" && echo "The old VPC named $vpc_name has been deleted!"
 else
@@ -81,8 +97,8 @@ echo "Public Subnet created: $pub_sub1"
 
 # Enable Public IP on launch
 aws ec2 modify-subnet-attribute \
-  --subnet-id $pub_sub1 \
-  --map-public-ip-on-launch
+    --subnet-id $pub_sub1 \
+    --map-public-ip-on-launch
 
 # Create private Subnet
 net_mask_privsub1="27"
@@ -96,3 +112,18 @@ priv_sub1=$(aws ec2 create-subnet \
   --query 'Subnet.SubnetId' \
   --output text)
 echo "Private Subnet created: $priv_sub1"
+
+##########################################################################################
+# Creating an IGW
+igwid=$(aws ec2 create-internet-gateway \
+	--tag-specifications "ResourceType=internet-gateway,Tags=[{Key=Name,Value=\"$igw_name\"}]" \
+--query 'InternetGateway.InternetGatewayId' \
+--output text)
+
+echo "Internet Gateway created: $igwid"
+
+# attaching the IGW to the VPC
+aws ec2 attach-internet-gateway --internet-gateway-id $igwid --vpc-id $vpc_id
+  
+echo "IGW attached: $igwid"
+
