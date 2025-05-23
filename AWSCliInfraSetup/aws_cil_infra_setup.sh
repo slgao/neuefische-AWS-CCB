@@ -23,10 +23,15 @@ else
     echo "No existing VPC named $vpc_name"
 fi    
 # Create a new VPC
-vpcid=$(aws ec2 create-vpc \
+vpc_id=$(aws ec2 create-vpc \
     --cidr-block $cidr_block \
     --tag-specifications "ResourceType=vpc,Tags=[{Key=Name,Value=\"$vpc_name\"}]" \
     --query 'Vpc.VpcId' \
     --output text)
-echo "VPC created: $vpcid"
+echo "VPC created: $vpc_id"
 
+# Enable DNS Hostnames
+
+aws ec2 modify-vpc-attribute \
+   --vpc-id $vpc_id \
+   --enable-dns-hostnames "{\"Value\":true}"
