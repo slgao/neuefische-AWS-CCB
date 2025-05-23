@@ -6,6 +6,7 @@
 
 vpc_name="MyVPC"
 pub_sub1_name="Public Subnet"
+priv_sub1_name="Private Subnet"
 ip="10.0.0.0"
 net_mask_vpc="26"
 cidr_block="$ip/$net_mask_vpc"	# have 64 total private IPs
@@ -72,3 +73,19 @@ echo "Public Subnet created: $pub_sub1"
 aws ec2 modify-subnet-attribute \
   --subnet-id $pub_sub1 \
   --map-public-ip-on-launch
+
+# Create private Subnet
+net_mask_privsub1="27"
+start_ip_privsub="10.0.0.32"
+cidr_block_privsub1="$start_ip_privsub/$net_mask_privsub1"
+priv_sub1=$(aws ec2 create-subnet \
+  --vpc-id $vpc_id \
+  --cidr-block $cidr_block_privsub1 \
+  --availability-zone $az \
+  --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=\"$priv_sub1_name\"}]" \
+  --query 'Subnet.SubnetId' \
+  --output text)
+
+echo "Private Subnet created: $priv_sub1"
+
+
