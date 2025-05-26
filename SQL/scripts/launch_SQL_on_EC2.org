@@ -1,0 +1,45 @@
+# This is a SQL practice which includes installing mysql server and loginto it on EC2 instannce created on AWS using Amazon Linux 2023
+#+begin_src bash
+sudo yum install -y https://dev.mysql.com/get/mysql80-community-release-el9-1.noarch.rpm
+sudo yum repolist enabled | grep mysql
+sudo yum install -y mysql-community-server --nogpgcheck -y
+sudo systemctl start mysqld 
+sudo systemctl enable mysqld
+# get the password
+sudo grep 'temporary password' /var/log/mysqld.log
+# reset password
+sudo mysql_secure_installation
+# login to mysql
+mysql -h localhost -uroot -p
+#+end_src
+
+# below is the SQL statements
+# ----------------------------------------------------------------------
+# show database
+#+begin_src sql
+show databases;
+#+end_src
+
+#+begin_src bash
+# back to bash shell
+sudo yum update -y
+sudo yum install git -y
+# install a repo
+git clone https://github.com/datacharmer/test_db.git
+
+# go into the folder
+cd test_db
+ls -la
+
+# load the sql file to mysql server
+mysql -h localhost -uroot -p < employees.sql
+#+end_src
+
+# SQL statements
+#+begin_src sql
+  use employees;
+  show tables;
+  describe employees;
+  select * from employees limit 25;
+  select count(*) from employees;
+#+end_src
