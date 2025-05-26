@@ -1,4 +1,4 @@
-# This is a SQL practice which includes installing mysql server and loginto it on EC2 instannce created on AWS using Amazon Linux 2023
+* This is a SQL practice which includes installing mysql server and loginto it on EC2 instannce created on AWS using Amazon Linux 2023
 #+begin_src bash
 sudo yum install -y https://dev.mysql.com/get/mysql80-community-release-el9-1.noarch.rpm
 sudo yum repolist enabled | grep mysql
@@ -13,15 +13,14 @@ sudo mysql_secure_installation
 mysql -h localhost -uroot -p
 #+end_src
 
-# below is the SQL statements
-# ----------------------------------------------------------------------
-# show database
+* below is the SQL statements
+show database
 #+begin_src sql
 show databases;
 #+end_src
 
+* back to bash shell
 #+begin_src bash
-# back to bash shell
 sudo yum update -y
 sudo yum install git -y
 # install a repo
@@ -35,7 +34,7 @@ ls -la
 mysql -h localhost -uroot -p < employees.sql
 #+end_src
 
-# SQL statements
+* SQL statements
 #+begin_src sql
   use employees;
   show tables;
