@@ -1,5 +1,5 @@
 * This is a SQL practice which includes installing mysql server and loginto it on EC2 instannce self-created on AWS using Amazon Linux 2023
-** Manually install the MySQL server from official rpm file
+** (Option 1) Manually install the MySQL server from official rpm file
 #+begin_src bash
   sudo yum install -y https://dev.mysql.com/get/mysql80-community-release-el9-1.noarch.rpm
   sudo yum repolist enabled | grep mysql
@@ -26,7 +26,7 @@
   mysql -h localhost -uroot -p
 #+end_src
 
-** Or install docker and use docker MySQL image
+** (Option2) Or install docker and use docker MySQL image
 #+begin_src bash
   sudo dnf install docker -y
   sudo systemctl start docker
@@ -47,7 +47,7 @@
   sudo mysql -h 127.0.0.1 -P 3306 -u root -pStrongPass123!
 #+end_src
 
-** For some labs, the EC2 instance used mariadb server, the setup is as follows:
+** (Only for vocareum Labs) the EC2 instance used mariadb server, the setup is as follows:
 #+begin_src bash
   # yum -y update
   # yum -y upgrade
@@ -65,6 +65,8 @@
     UPDATE mysql.user SET Password=PASSWORD('re:St@rt!9') WHERE User='root';
     FLUSH PRIVILEGES;
     EOF
+#+end_src
+#+begin_src bash
   # Install AWS CLI v2
   yum remove awscli -y
   curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
