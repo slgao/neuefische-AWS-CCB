@@ -1,4 +1,4 @@
-* This is a SQL practice which includes installing mysql server and loginto it on EC2 instannce created on AWS using Amazon Linux 2023
+* This is a SQL practice which includes installing mysql server and loginto it on EC2 instannce self-created on AWS using Amazon Linux 2023
 ** Manually install the MySQL server from official rpm file
 #+begin_src bash
   sudo yum install -y https://dev.mysql.com/get/mysql80-community-release-el9-1.noarch.rpm
@@ -45,6 +45,40 @@
 
   sudo mysql -h 127.0.0.1 -P 3306 -u root -p < employees.sql
   sudo mysql -h 127.0.0.1 -P 3306 -u root -pStrongPass123!
+#+end_src
+
+** For some labs, the EC2 instance used mariadb server, the setup is as follows:
+#+begin_src bash
+  # yum -y update
+  # yum -y upgrade
+  # curl -LsS -O https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
+  # bash mariadb_repo_setup --os-type=rhel --os-version=7 --mariadb-server-version=10.6
+  # yum install wget mariadb-server --disablerepo=mariadb-maxscale -y
+  sudo yum install -y mariadb-server # direct install if the above failed, which will probabaly be.
+  systemctl enable --now mariadb
+  systemctl start mariadb
+  #rm -rf mariadb_repo_setup
+  wget https://aws-tc-largeobjects.s3.us-west-2.amazonaws.com/CUR-TF-100-RSDBAS-3-124627/268-lab-DF-database-table-operations/s3/world.sql -P /home/ec2-user/
+  mkdir /home/ec2-user/logs/
+  touch /home/ec2-user/logs/create-db.log
+  mysql --user=root <<EOF
+    UPDATE mysql.user SET Password=PASSWORD('re:St@rt!9') WHERE User='root';
+    FLUSH PRIVILEGES;
+    EOF
+  # Install AWS CLI v2
+  yum remove awscli -y
+  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+  unzip awscliv2.zip
+  ./aws/install -b
+  export PATH=/usr/local/bin:$PATH
+  rm -rf awscliv2.zip typescript aws
+  touch ~/.ssh/config
+  echo "Host *" > ~/.ssh/config
+  echo "ServerAliveInterval 60" >> ~/.ssh/config
+  chmod 600 ~/.ssh/config
+  yum update -y aws-cfn-bootstrap
+  /opt/aws/bin/cfn-init -v --stack c159953a4105831l10431916t1w805655097202 --resource CommandHost --configsets IncreaseSessionMgrTimeout --region us-west-2
+  /opt/aws/bin/cfn-signal -e $? --stack c159953a4105831l10431916t1w805655097202 --resource CommandHost --region us-west-2
 #+end_src
 
 ** below is the SQL statements
