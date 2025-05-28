@@ -47,14 +47,13 @@
   sudo mysql -h 127.0.0.1 -P 3306 -u root -pStrongPass123!
 #+end_src
 
-** (Only for vocareum Labs) the EC2 instance used mariadb server, the setup is as follows:
+** (Only for vocareum Labs) the EC2 instance used mariadb server, the setup is as follows (or run the user data script and install mariadb-server using yum):
 #+begin_src bash
-  # yum -y update
-  # yum -y upgrade
-  # curl -LsS -O https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
-  # bash mariadb_repo_setup --os-type=rhel --os-version=7 --mariadb-server-version=10.6
-  # yum install wget mariadb-server --disablerepo=mariadb-maxscale -y
-  sudo yum install -y mariadb-server # direct install if the above failed, which will probabaly be.
+  yum -y update
+  yum -y upgrade
+  curl -LsS -O https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
+  bash mariadb_repo_setup --os-type=rhel --os-version=7 --mariadb-server-version=10.6
+  yum install wget mariadb-server --disablerepo=mariadb-maxscale -y
   systemctl enable --now mariadb
   systemctl start mariadb
   #rm -rf mariadb_repo_setup
@@ -65,8 +64,7 @@
     UPDATE mysql.user SET Password=PASSWORD('re:St@rt!9') WHERE User='root';
     FLUSH PRIVILEGES;
     EOF
-#+end_src
-#+begin_src bash
+
   # Install AWS CLI v2
   yum remove awscli -y
   curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
@@ -81,6 +79,7 @@
   yum update -y aws-cfn-bootstrap
   /opt/aws/bin/cfn-init -v --stack c159953a4105831l10431916t1w805655097202 --resource CommandHost --configsets IncreaseSessionMgrTimeout --region us-west-2
   /opt/aws/bin/cfn-signal -e $? --stack c159953a4105831l10431916t1w805655097202 --resource CommandHost --region us-west-2
+  sudo yum install -y mariadb-server # direct install if the above failed, which will probabaly be.
 #+end_src
 
 ** below is the SQL statements
