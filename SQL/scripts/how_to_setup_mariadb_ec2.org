@@ -1,0 +1,51 @@
+** This is the script on how to setup the mariadb server and mysql client on the labs.
+#+begin_src bash
+  # --Install Mariadb
+  sudo yum install -y mariadb-server
+
+  # -- Start the service 
+
+  sudo systemctl start mariadb
+
+  # -- verify the status of mariadb
+
+  sudo systemctl status mariadb
+
+  # -- Observation : It's active 
+
+  # Connect to the server/database
+
+  # -- DB User/ root
+
+  # -- Works without password 
+
+  sudo mysql -h localhost -u root -p
+
+  # -- Download script to install world DB 
+  wget https://aws-tc-largeobjects.s3.us-west-2.amazonaws.com/CUR-TF-100-RSDBAS-3-124627/268-lab-DF-database-table-operations/s3/world.sql 
+
+   # -- verify the existence of sql 
+   ls *.sql
+
+   # -- Create/restore the database with the downloaded script world.sql
+   sudo mysql -h localhost -u root -p < world.sql
+
+   # --no password required 
+   sudo mysql -h localhost -u root -p
+#+end_src
+ 
+#+begin_src sql
+
+--To get the list of databases
+ SHOW DATABASES;
+ 
+ --USE world;
+
+-- To get the list of tables from the world database
+SHOW TABLES; 
+
+-- Get 10 records from the city table 
+select * from city limit 10;
+#+end_src
+
+ 
