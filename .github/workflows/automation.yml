@@ -4,18 +4,18 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'project/**'  # Trigger only for changes in path
+      - 'project/calculator_app/**'  # Trigger only for changes in path
   pull_request:
     branches: [ main ]
     paths:
-      - 'project/**'
+      - 'project/calculator_app/**'
 
 jobs:
   test:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./project
+        working-directory: ./project/calculator_app
     steps:
       - uses: actions/checkout@v3
 
