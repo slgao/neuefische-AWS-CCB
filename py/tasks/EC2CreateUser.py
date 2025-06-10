@@ -52,7 +52,7 @@ def assign_user_home_dir(username, use_os=False):
 
 def add_user_and_homedir():
     # Define the username
-    username = input("Give a username you want to created:")
+    username = input("Give a username you want to create:")
     # Check if the user already exists
     if user_exists(username):
         print(f"User '{username}' already exists.")

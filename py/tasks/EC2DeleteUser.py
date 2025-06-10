@@ -34,7 +34,7 @@ def delete_user_and_home(username, use_os=False):
 
 def del_user_and_homedir():
     # Define the username
-    username = input("Give a username you want to deleted:")
+    username = input("Give a username you want to delete:")
     # Check if the user already exists
     if not user_exists(username):
         print(f"User '{username}' does not exist.")
