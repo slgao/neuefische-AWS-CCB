@@ -14,6 +14,7 @@ import os
 from pypdf import PdfReader, PdfWriter
 from pathlib import Path
 
+
 def find_pdfs_in_folder(folder_path):
     pdf_files = []
     for dirpath, _, filenames in os.walk(folder_path):
@@ -21,6 +22,7 @@ def find_pdfs_in_folder(folder_path):
             if file.lower().endswith(".pdf"):
                 pdf_files.append(os.path.join(dirpath, file))
     return pdf_files
+
 
 def merge_pdfs_with_writer(folders, output_file):
     writer = PdfWriter()
@@ -50,9 +52,17 @@ def merge_pdfs_with_writer(folders, output_file):
     else:
         print("❌ No PDFs were merged.")
 
+
 if __name__ == "__main__":
     slides_folder = f"{Path.home()}/neuefische_training/AWS_cloud_computing/slides"
-    chapters = ["CloudFoundations", "Linux", "Networking", "Security"]  # order matters
+    chapters = [
+        "CloudFoundations",
+        "Linux",
+        "Networking",
+        "Security",
+        "Databases",
+        "PythonProgramming",
+    ]  # order matters
     # Specify your folders here, in the order you want them processed
     folders_to_merge = [Path(f"{slides_folder}/{c}/").as_posix() for c in chapters]
     print(folders_to_merge[0])
