@@ -20,17 +20,18 @@ def create_user_and_home(username, password="password123", use_os=False):
         os.system(f"echo '{username}:{password}' | sudo chpasswd")
         print(f"User '{username}' and their home directory created.")
         return
-    try:
-        # Create user with home directory
-        subprocess.run(["sudo", "useradd", "-m", username], check=True)
-        # Set password for the user
-        subprocess.run(
-            ["sudo", "chpasswd"], input=f"{username}:{password}\n".encode(), check=True
-        )
-        print(f"User '{username}' and their home directory created.")
-    except subprocess.CalledProcessError as e:
-        print(f"Failed to create user '{username}': {e}")
-        return
+    else:
+        try:
+            # Create user with home directory
+            subprocess.run(["sudo", "useradd", "-m", username], check=True)
+            # Set password for the user
+            subprocess.run(
+                ["sudo", "chpasswd"], input=f"{username}:{password}\n".encode(), check=True
+            )
+            print(f"User '{username}' and their home directory created.")
+        except subprocess.CalledProcessError as e:
+            print(f"Failed to create user '{username}': {e}")
+            return
 
 
 def assign_user_home_dir(username, use_os=False):
