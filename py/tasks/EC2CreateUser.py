@@ -59,7 +59,6 @@ def add_user_and_homedir():
     else:
         # Create the user and home directory
         create_user_and_home(username)
-        assign_user_home_dir(username)
 
 
 if __name__ == "__main__":
