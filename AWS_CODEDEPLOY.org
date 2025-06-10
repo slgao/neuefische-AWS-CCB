@@ -1,0 +1,9 @@
+** what does the tool do?
+AWS CodeDeploy is a fully managed deployment service that automates application deployments to compute services such as Amazon EC2,
+Amazon Elastic Container Service (Amazon ECS), AWS Lambda, or on-premises servers. 
+
+** Why is that an important need?
+Speed and efficiency,   reliability and consistency.  scalability, reduced downtime. cost efficiency.
+
+** Identify specific use cases for the tool.
+For example, CodeDeploy automates the deployment of updated application code to EC2 instance using some kind of strategies. 
