@@ -1,0 +1,99 @@
+* This is a SQL practice which includes installing mysql server and loginto it on EC2 instannce self-created on AWS using Amazon Linux 2023
+** (Option 1) Manually install the MySQL server from official rpm file
+#+begin_src bash
+  sudo yum install -y https://dev.mysql.com/get/mysql80-community-release-el9-1.noarch.rpm
+  sudo yum repolist enabled | grep mysql
+  sudo yum install -y mysql-community-server --nogpgcheck -y
+  sudo systemctl start mysqld 
+  sudo systemctl enable mysqld
+  # get the password
+  sudo grep 'temporary password' /var/log/mysqld.log
+  # reset password
+  sudo mysql_secure_installation
+
+  sudo yum update -y
+  sudo yum install git -y
+  # install a repo
+  git clone https://github.com/datacharmer/test_db.git
+
+  # go into the folder
+  cd test_db
+  ls -la
+
+  # load the sql file to mysql server
+  mysql -h localhost -uroot -p < employees.sql
+  # login to mysql
+  mysql -h localhost -uroot -p
+#+end_src
+
+** (Option2) Or install docker and use docker MySQL image
+#+begin_src bash
+  sudo dnf install docker -y
+  sudo systemctl start docker
+  sudo systemctl enable docker
+  sudo usermod -aG docker ec2-user
+  sudo dnf install -y https://dev.mysql.com/get/mysql80-community-release-el9-1.noarch.rpm
+  sudo dnf install -y mysql --nogpgcheck -y
+  sudo yum install git
+
+  sudo docker pull mysql:8.0
+  sudo docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=StrongPass123! -p 3306:3306 -d mysql:8.0
+  git clone https://github.com/datacharmer/test_db.git
+  cd test_db/
+  # show the activities on port 3306
+  sudo lsof -i :3306
+
+  sudo mysql -h 127.0.0.1 -P 3306 -u root -p < employees.sql
+  sudo mysql -h 127.0.0.1 -P 3306 -u root -pStrongPass123!
+#+end_src
+
+** (Only for vocareum Labs) the EC2 instance used mariadb server, the setup is as follows (or run the user data script and install mariadb-server using yum):
+#+begin_src bash
+  yum -y update
+  yum -y upgrade
+  curl -LsS -O https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
+  bash mariadb_repo_setup --os-type=rhel --os-version=7 --mariadb-server-version=10.6
+  yum install wget mariadb-server --disablerepo=mariadb-maxscale -y
+  systemctl enable --now mariadb
+  systemctl start mariadb
+  #rm -rf mariadb_repo_setup
+  wget https://aws-tc-largeobjects.s3.us-west-2.amazonaws.com/CUR-TF-100-RSDBAS-3-124627/268-lab-DF-database-table-operations/s3/world.sql -P /home/ec2-user/
+  mkdir /home/ec2-user/logs/
+  touch /home/ec2-user/logs/create-db.log
+  mysql --user=root <<EOF
+    UPDATE mysql.user SET Password=PASSWORD('re:St@rt!9') WHERE User='root';
+    FLUSH PRIVILEGES;
+    EOF
+
+  # Install AWS CLI v2
+  yum remove awscli -y
+  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+  unzip awscliv2.zip
+  ./aws/install -b
+  export PATH=/usr/local/bin:$PATH
+  rm -rf awscliv2.zip typescript aws
+  touch ~/.ssh/config
+  echo "Host *" > ~/.ssh/config
+  echo "ServerAliveInterval 60" >> ~/.ssh/config
+  chmod 600 ~/.ssh/config
+  yum update -y aws-cfn-bootstrap
+  /opt/aws/bin/cfn-init -v --stack c159953a4105831l10431916t1w805655097202 --resource CommandHost --configsets IncreaseSessionMgrTimeout --region us-west-2
+  /opt/aws/bin/cfn-signal -e $? --stack c159953a4105831l10431916t1w805655097202 --resource CommandHost --region us-west-2
+  sudo yum install -y mariadb-server # direct install if the above failed, which will probabaly be.
+#+end_src
+
+** below is the SQL statements
+show database
+#+begin_src sql
+  show databases;
+#+end_src
+
+** SQL statements
+#+begin_src sql
+  show databases;
+  use employees;
+  show tables;
+  describe employees;
+  select * from employees limit 25;
+  select count(*) from employees;
+#+end_src
