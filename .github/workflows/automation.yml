@@ -4,11 +4,11 @@ on:
   push:
     branches: [ main ]
     paths:
-      - '/project/**'  # Trigger only for changes in path
+      - './project/**'  # Trigger only for changes in path
   pull_request:
     branches: [ main ]
     paths:
-      - '/project/**'
+      - './project/**'
 
 jobs:
   test:
