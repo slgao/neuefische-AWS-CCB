@@ -1,9 +1,26 @@
 ** what does the tool do?
 AWS CodeDeploy is a fully managed deployment service that automates application deployments to compute services such as Amazon EC2,
-Amazon Elastic Container Service (Amazon ECS), AWS Lambda, or on-premises servers. 
+Amazon Elastic Container Service (Amazon ECS), AWS Lambda, or on-premises servers.
+CodeDeploy integrates with other AWS services like CodePipeline and CodeBuild to form a complete CI/CD pipeline, allowing developers to deploy code changes reliably and at scale.
 
 ** Why is that an important need?
-Speed and efficiency,   reliability and consistency.  scalability, reduced downtime. cost efficiency.
+- Automated software deployment addresses critical needs in modern software development:
+
+    - Speed and Efficiency:
+      Manual deployments are slow and error-prone, especially for large-scale or frequent releases. CodeDeploy automates the process, reducing deployment time and human error.
+    - Reliability and Consistency:
+      It ensures consistent deployment across multiple environments (development, staging, production), minimizing configuration drift and deployment failures.
+    - Scalability:
+      As applications grow, managing deployments across numerous servers or regions becomes complex. CodeDeploy scales effortlessly, particularly in AWS environments.
+    - Reduced Downtime:
+      Features like blue/green deployments allow updates without interrupting user access, critical for high-availability applications.
+    - Cost Efficiency:
+      By automating deployments and reducing errors, it lowers operational costs and developer overhead, especially for organizations leveraging AWS infrastructure.
 
 ** Identify specific use cases for the tool.
-For example, CodeDeploy automates the deployment of updated application code to EC2 instance using some kind of strategies. 
+    - For example, CodeDeploy automates the deployment of updated application code to EC2 instance using some kind of strategies.
+    - CodeDeploy manages blue/green deployments for ECS containers, spinning up new container tasks with updated code and switching traffic only after validation, ensuring high availability.
+
+Presentation slide
+[[https://docs.google.com/presentation/d/115Mm-p_Q3IdSQBmrBOab8BPKaRUfv4uZ/edit?slide=id.p3#slide=id.p3]]
+
