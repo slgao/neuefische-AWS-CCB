@@ -58,4 +58,5 @@ def main():
 
 
 if __name__ == "__main__":
+    # Run the main function to demonstrate the calculator
     main()
