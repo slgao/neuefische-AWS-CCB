@@ -9,15 +9,17 @@ The system can automatically build, package, test, and release new code merges t
 Deployment automation differs from build automation, which concentrates on assembling software components.
 Instead, deployment automation focuses on distributing those components to designated environments.
 
+[[https://www.atlassian.com/devops/frameworks/deployment-automation][source]]
+
 Tools:
 
 - Jenkins, Github Actions, AWS CodeDeploy
-- Ansible, Terraform: Provision and deploy infrastructure across cloud providers.
+- Ansible: Configuration management and deployment tool. Terraform: Provision and deploy infrastructure across cloud providers.
 - Docker + Kubernetes: Microservice deployment
 
 
 
-*** What are the expected benefits of deployment automation?
+** What are the expected benefits of deployment automation?
 
 - Faster release cycles:
   
@@ -37,7 +39,7 @@ Tools:
 - Easier rollbacks
 
 
-*** What are the challenges?
+** What are the challenges?
 
 - Initial Setup Complexity
 
