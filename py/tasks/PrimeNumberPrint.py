@@ -7,15 +7,18 @@ def is_prime(n):
     # 2 and 3 are prime numbers
     elif n <= 3:
         return True
-    for i in range(2, int(n**.5) + 1):
-        if n % i == 0:
-            return False
+    elif n % 2 == 0:
+        return False
+    else:
+        for i in range(2, int(n**0.5) + 1):
+            if n % i == 0:
+                return False
     return True
+
 
 def create_file_with_content(str_content, file_name="./results.txt", mode="w"):
     with open(file_name, mode) as file:
         file.write(str_content)
-
 
 
 def main():
