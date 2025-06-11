@@ -1,0 +1,64 @@
+** What are some deployment automation tools?
+
+*** What is deployment automation
+Deployment automation uses software tools and systems to move code changes from one
+software environment to another, eliminating the need for manual software releases.
+
+The system can automatically build, package, test, and release new code merges to staging servers. 
+
+Deployment automation differs from build automation, which concentrates on assembling software components.
+Instead, deployment automation focuses on distributing those components to designated environments.
+
+Tools:
+
+- Jenkins, Github Actions, AWS CodeDeploy
+- Ansible, Terraform: Provision and deploy infrastructure across cloud providers.
+- Docker + Kubernetes: Microservice deployment
+
+
+
+*** What are the expected benefits of deployment automation?
+
+- Faster release cycles:
+  
+
+- Reduced errors:
+  Through automation reduce human errors
+
+- Reliability and consistency improvement
+
+
+- Enhance scalability
+
+
+- Reduce downtime
+
+
+- Easier rollbacks
+
+
+*** What are the challenges?
+
+- Initial Setup Complexity
+
+  Creating reliable deployment pipelines and writing scripts for various environments can
+  be time-consuming and complex.
+
+- Tool Integration Issues
+
+  Integrating automation tools with existing tools (e.g., version control, cloud services, testing frameworks)
+  may require customization.
+
+- Security Risks
+
+  Automated systems, if not properly secured, could be exploited to access
+  production environments or sensitive data.
+
+- Over-automation Risks
+  
+  Automating everything too quickly, without understanding the full process, can
+  lead to fragile systems that are hard to maintain.
+
+- Infrastructure Dependency
+  
+  Automation scripts might depend on specific infrastructure, which can make them less portable or harder to scale.
