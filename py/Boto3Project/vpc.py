@@ -9,9 +9,9 @@ class VPC(object):
     def __init__(self):
         super(VPC, self).__init__()
 
-    def get_client(self):
+    def set_client(self, client):
         """Get the AWS client for VPC operations."""
-        self.client = boto3.client('ec2')
+        self.client = client
         
 
     def create_vpc(self, cidr_block):
