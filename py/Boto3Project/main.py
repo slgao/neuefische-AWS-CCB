@@ -9,7 +9,8 @@ from config import Config
 from ec2 import EC2
 from vpc import VPC
 from subnet import Subnet
-
+from internet_gateway import InternetGateway
+from route_table import RouteTable
 
 def main():
     config = Config()
@@ -45,6 +46,16 @@ def main():
         vpc_id=vpc_id,
         map_public_ip_on_launch=False,
     )
+
+    # Internet Gateway Operations
+    igw = InternetGateway(config)
+    igw.set_client(ec2)
+    igw.create_internet_gateway()
+    igw.create_tags()
+    igw.attach_internet_gateway(vpc_id)
+    
+    # Route Table Operations
+    
 
 
 if __name__ == "__main__":

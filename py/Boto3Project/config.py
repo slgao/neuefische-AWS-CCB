@@ -18,3 +18,5 @@ class Config(object):
         self.public_subnet_cidr = f"{self.vpc_ip}.0/{self.subnet_net_mask}"
         self.private_subnet_name = "PrivateSubnet"
         self.private_subnet_cidr = f"{self.vpc_ip}.16/{self.subnet_net_mask}"
+
+        self.igw_name = "MyIGW"
