@@ -1,6 +1,3 @@
-import boto3
-
-
 class Subnet(object):
     """Documentation for Subnet"""
 
