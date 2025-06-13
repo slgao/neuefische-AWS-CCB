@@ -59,6 +59,8 @@ def main():
     rt.set_client(ec2)
     # create route table for public subnet
     public_route_table_id = rt.create_route_table(vpc_id)
+    # create tags for public route table
+    rt.create_tags(route_table_id=public_route_table_id)
     # create route for public subnet to internet gateway
     rt.create_route(route_table_id=public_route_table_id, gateway_id=igw.igw_id)
     # associate route table with public subnet

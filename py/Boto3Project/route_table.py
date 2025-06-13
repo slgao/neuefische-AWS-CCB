@@ -16,8 +16,9 @@ class RouteTable(object):
         print(f"Route Table {route_table_id} created in VPC {vpc_id}")
         return route_table_id
 
-    def create_tags(self, route_table_id, name):
+    def create_tags(self, route_table_id):
         """Create tags for the route table."""
+        name = self.config.public_route_table_name
         self.client.create_tags(
             Resources=[route_table_id], Tags=[{"Key": "Name", "Value": name}]
         )

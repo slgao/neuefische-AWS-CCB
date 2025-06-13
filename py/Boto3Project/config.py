@@ -20,3 +20,4 @@ class Config(object):
         self.private_subnet_cidr = f"{self.vpc_ip}.16/{self.subnet_net_mask}"
 
         self.igw_name = "MyIGW"
+        self.public_route_table_name = "PublicRouteTable"
