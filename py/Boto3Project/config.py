@@ -21,3 +21,7 @@ class Config(object):
 
         self.igw_name = "MyIGW"
         self.public_route_table_name = "PublicRouteTable"
+
+        self.use_myip = True
+        self.security_group_name = "MySecurityGroup"
+        self.ssh_port = 22

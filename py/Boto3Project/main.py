@@ -11,6 +11,7 @@ from vpc import VPC
 from subnet import Subnet
 from internet_gateway import InternetGateway
 from route_table import RouteTable
+from security_group import SecurityGroup
 
 
 def main():
@@ -67,6 +68,14 @@ def main():
     rt.associate_route_table(
         route_table_id=public_route_table_id, subnet_id=public_subnet_id
     )
+
+    # Security Group Operations
+    # Create security groups
+    sg = SecurityGroup(config)
+    sg.set_client(ec2)
+    sg.create_security_group(config.security_group_name, vpc_id)
+    sg.authorize_securtiy_group(port=config.ssh_port, description="Allow SSH access")
+    sg.create_tags()
 
 
 if __name__ == "__main__":
