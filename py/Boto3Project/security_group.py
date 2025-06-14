@@ -30,13 +30,13 @@ class SecurityGroup(object):
             f"Security Group {group_name}:{self.security_group_id} created in VPC {vpc_id}"
         )
 
-    def authorize_securtiy_group(self, port=22, description="SSH access"):
+    def authorize_securtiy_group(self, port=22, protocol="tcp", description="SSH access"):
         self.set_ip()
         self.client.authorize_security_group_ingress(
             GroupId=self.security_group_id,
             IpPermissions=[
                 {
-                    "IpProtocol": "tcp",  # Protocol type
+                    "IpProtocol": protocol,  # Protocol type
                     "FromPort": port,  # Starting port - SSH
                     "ToPort": port,  # Ending port
                     "IpRanges": [{"CidrIp": f"{self.ip}/32", "Description": description}],

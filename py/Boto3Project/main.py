@@ -12,6 +12,7 @@ from subnet import Subnet
 from internet_gateway import InternetGateway
 from route_table import RouteTable
 from security_group import SecurityGroup
+from rds import RDS
 
 
 def main():
@@ -31,22 +32,38 @@ def main():
     # Subnet Operations
     subnet = Subnet(config)
     subnet.set_client(ec2)
-    # create public subnet
-    public_subnet_id = subnet.create_subnet(
-        name=config.public_subnet_name,
-        cidr_block=config.public_subnet_cidr,
-        az=config.az,
-        vpc_id=vpc_id,
-        map_public_ip_on_launch=True,
-    )
-    # create private subnet
-    subnet.create_subnet(
-        name=config.private_subnet_name,
-        cidr_block=config.private_subnet_cidr,
-        az=config.az,
-        vpc_id=vpc_id,
-        map_public_ip_on_launch=False,
-    )
+    public_subnet_names = [config.public_subnet1_name, config.public_subnet2_name]
+    private_subnet_names = [config.private_subnet1_name, config.private_subnet2_name]
+    azs = [config.az, config.az2]
+    # create public subnets
+    for subnet_name, az in zip(public_subnet_names, azs):
+        # create public subnets and get their ids at the same time
+        subnet.create_subnet(
+            name=subnet_name,
+            cidr_block=(
+                config.public_subnet1_cidr
+                if "1" in subnet_name
+                else config.public_subnet2_cidr
+            ),
+            az=az,
+            vpc_id=vpc_id,
+            map_public_ip_on_launch=True,
+        )
+    # create private subnets
+    for subnet_name, az in zip(private_subnet_names, azs):
+        subnet.create_subnet(
+            name=subnet_name,
+            cidr_block=(
+                config.private_subnet1_cidr
+                if "1" in subnet_name
+                else config.private_subnet2_cidr
+            ),
+            az=az,
+            vpc_id=vpc_id,
+            map_public_ip_on_launch=False,
+        )
+    # Print the subnet IDs
+    print(f"Subnets Created ----: {config.subnet_ids}")
 
     # Internet Gateway Operations
     igw = InternetGateway(config)
@@ -66,7 +83,8 @@ def main():
     rt.create_route(route_table_id=public_route_table_id, gateway_id=igw.igw_id)
     # associate route table with public subnet
     rt.associate_route_table(
-        route_table_id=public_route_table_id, subnet_id=public_subnet_id
+        route_table_id=public_route_table_id,
+        subnet_id=config.subnet_ids[config.public_subnet1_name],
     )
 
     # Security Group Operations
@@ -76,6 +94,20 @@ def main():
     sg.create_security_group(config.security_group_name, vpc_id)
     sg.authorize_securtiy_group(port=config.ssh_port, description="Allow SSH access")
     sg.create_tags()
+
+    # RDS Operations
+    rds = RDS(config)
+    # Only get subnet ids from public subnets
+    public_subnet_ids = [
+        config.subnet_ids[config.public_subnet1_name],
+        config.subnet_ids[config.public_subnet2_name],
+    ]
+    rds.create_db_subnet_group(subnet_ids=public_subnet_ids)
+    # Create security group for RDS
+    sg.create_security_group(config.security_group_name + "-rds", vpc_id)
+    # Authorize security group for RDS
+    sg.authorize_securtiy_group(port=config.rds_port, description="Allow RDS access")
+    rds.create_RDS_instance(rds_sg_ids=[sg.security_group_id])
 
 
 if __name__ == "__main__":
