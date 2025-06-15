@@ -1,0 +1,41 @@
+# This file contains configuration settings for the AWS resources
+ec2:
+  key_pair_name: labsuser
+  ec2_instance_name: Bastion Server
+  instance_type: t3.micro
+  az: us-west-2a
+  az2: us-west-2b
+  region: us-west-2
+
+vpc:
+  ip: 10.0.0
+  net_mask: 26
+  name: MyVPC
+
+subnets:
+  net_mask: 28
+  public_subnet1: { name: PublicSubnet1, cidr: 10.0.0.0/28 }
+  private_subnet1: { name: PrivateSubnet1, cidr: 10.0.0.16/28 }
+  public_subnet2: { name: PublicSubnet2, cidr: 10.0.0.32/28 }
+  private_subnet2: { name: PrivateSubnet2, cidr: 10.0.0.48/28 }
+
+network:
+  igw_name: MyIGW
+  public_route_table_name: PublicRouteTable
+
+security:
+  use_myip: true
+  group_name: MySecurityGroup
+  ssh_port: 22
+
+rds:
+  db_subnet_group_name: MyDBSubnetGroup
+  instance_identifier: MyRDSInstance
+  name: MyDatabase
+  instance_class: db.t3.micro
+  engine: mysql
+  engine_version: 8.0.33
+  master_username: admin
+  master_password: password123
+  allocated_storage: 20
+  port: 3306

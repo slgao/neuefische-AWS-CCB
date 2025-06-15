@@ -1,49 +1,50 @@
 # This file contains configuration settings for the AWS resources
+import yaml
 
-class Config(object):
-    """Configuration settings for AWS resources.
-       The configs can be read from a file.
 
-    """
-    def __init__(self):
+class Config:
+    def __init__(self, config_file="config.yml"):
         super(Config, self).__init__()
-        self.key_pair_name = "labsuser"
-        self.ec2_instance_name = "Bastion Server"
-        self.instance_type = "t3.micro"
-        self.az = 'us-west-2a'
-        self.az2 = 'us-west-2b'
-        self.region = 'us-west-2'
-        self.vpc_ip = "10.0.0"
-        self.vpc_net_mask = "26"
+        with open(config_file, "r") as f:
+            cfg = yaml.safe_load(f)
+
+        self.key_pair_name = cfg["ec2"]["key_pair_name"]
+        self.ec2_instance_name = cfg["ec2"]["ec2_instance_name"]
+        self.instance_type = cfg["ec2"]["instance_type"]
+        self.az = cfg["ec2"]["az"]
+        self.az2 = cfg["ec2"]["az2"]
+        self.region = cfg["ec2"]["region"]
+
+        self.vpc_ip = cfg["vpc"]["ip"]
+        self.vpc_net_mask = cfg["vpc"]["net_mask"]
         self.vpc_cidr = f"{self.vpc_ip}.0/{self.vpc_net_mask}"
-        self.vpc_name = "MyVPC"
-        
-        self.subnet_net_mask = "28"
-        self.public_subnet1_name = "PublicSubnet1"
-        self.public_subnet2_name = "PublicSubnet2"
-        self.private_subnet1_name = "PrivateSubnet1"
-        self.private_subnet2_name = "PrivateSubnet2"
-        self.public_subnet1_cidr = f"{self.vpc_ip}.0/{self.subnet_net_mask}"
-        self.private_subnet1_cidr = f"{self.vpc_ip}.16/{self.subnet_net_mask}"
-        self.public_subnet2_cidr = f"{self.vpc_ip}.32/{self.subnet_net_mask}"
-        self.private_subnet2_cidr = f"{self.vpc_ip}.48/{self.subnet_net_mask}"
+        self.vpc_name = cfg["vpc"]["name"]
 
-        self.igw_name = "MyIGW"
-        self.public_route_table_name = "PublicRouteTable"
+        self.subnet_net_mask = cfg["subnets"]["net_mask"]
+        self.public_subnet1_name = cfg["subnets"]["public_subnet1"]["name"]
+        self.private_subnet1_name = cfg["subnets"]["private_subnet1"]["name"]
+        self.public_subnet2_name = cfg["subnets"]["public_subnet2"]["name"]
+        self.private_subnet2_name = cfg["subnets"]["private_subnet2"]["name"]
+        self.public_subnet1_cidr = cfg["subnets"]["public_subnet1"]["cidr"]
+        self.private_subnet1_cidr = cfg["subnets"]["private_subnet1"]["cidr"]
+        self.public_subnet2_cidr = cfg["subnets"]["public_subnet2"]["cidr"]
+        self.private_subnet2_cidr = cfg["subnets"]["private_subnet2"]["cidr"]
 
-        self.use_myip = True
-        self.security_group_name = "MySecurityGroup"
-        self.ssh_port = 22
+        self.igw_name = cfg["network"]["igw_name"]
+        self.public_route_table_name = cfg["network"]["public_route_table_name"]
 
-        self.db_subnet_group = "MyDBSubnetGroup"
-        self.db_instance_identifier = "MyRDSInstance"
-        self.db_name = "MyDatabase"
-        self.db_instance_class = "db.t3.micro"
-        self.db_engine = "mysql"
-        self.db_master_username = "admin"
-        self.db_master_password = "password123"
-        self.allocated_storage = 20
-        self.db_subnet_group_name = "MyDBSubnetGroup"
-        self.rds_port = 3306
-        self.db_engine_version = "8.0.33"
-        
+        self.use_myip = cfg["security"]["use_myip"]
+        self.security_group_name = cfg["security"]["group_name"]
+        self.ssh_port = cfg["security"]["ssh_port"]
+
+        self.db_subnet_group = cfg["rds"]["db_subnet_group_name"]
+        self.db_instance_identifier = cfg["rds"]["instance_identifier"]
+        self.db_name = cfg["rds"]["name"]
+        self.db_instance_class = cfg["rds"]["instance_class"]
+        self.db_engine = cfg["rds"]["engine"]
+        self.db_engine_version = cfg["rds"]["engine_version"]
+        self.db_master_username = cfg["rds"]["master_username"]
+        self.db_master_password = cfg["rds"]["master_password"]
+        self.allocated_storage = cfg["rds"]["allocated_storage"]
+        self.db_subnet_group_name = cfg["rds"]["db_subnet_group_name"]
+        self.rds_port = cfg["rds"]["port"]
