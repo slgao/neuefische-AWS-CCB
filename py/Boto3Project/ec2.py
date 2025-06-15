@@ -76,5 +76,6 @@ class EC2(object):
                 }
             ],
         )
-
-        return response["Instances"][0]["InstanceId"]
+        instance_id = response["Instances"][0]["InstanceId"]
+        print(f"EC2 instance {instance_id} run successfully.")
+        return instance_id
