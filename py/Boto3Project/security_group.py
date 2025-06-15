@@ -15,10 +15,10 @@ class SecurityGroup(object):
     def get_my_ip(self):
         return requests.get("https://checkip.amazonaws.com").text.strip()
 
-    def set_ip(self):
+    def set_ip_cidr(self):
         """Set the IP address to use for security group rules."""
-        ip = self.get_my_ip() if self.config.use_myip else "0.0.0.0/0"
-        self.ip = ip
+        ip_cidr = f"{self.get_my_ip()}/32" if self.config.use_myip else "0.0.0.0/0"
+        self.ip_cidr = ip_cidr
 
     def create_security_group(self, group_name, vpc_id, description="Default SG"):
         """Create a security group in the specified VPC."""
@@ -31,7 +31,7 @@ class SecurityGroup(object):
         )
 
     def authorize_securtiy_group(self, port=22, protocol="tcp", description="SSH access"):
-        self.set_ip()
+        self.set_ip_cidr()
         self.client.authorize_security_group_ingress(
             GroupId=self.security_group_id,
             IpPermissions=[
@@ -39,7 +39,7 @@ class SecurityGroup(object):
                     "IpProtocol": protocol,  # Protocol type
                     "FromPort": port,  # Starting port - SSH
                     "ToPort": port,  # Ending port
-                    "IpRanges": [{"CidrIp": f"{self.ip}/32", "Description": description}],
+                    "IpRanges": [{"CidrIp": self.ip_cidr, "Description": description}],
                 }
             ],
         )
