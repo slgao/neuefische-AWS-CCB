@@ -7,6 +7,9 @@ class Config(object):
     """
     def __init__(self):
         super(Config, self).__init__()
+        self.key_pair_name = "labsuser"
+        self.ec2_instance_name = "Bastion Server"
+        self.instance_type = "t3.micro"
         self.az = 'us-west-2a'
         self.az2 = 'us-west-2b'
         self.region = 'us-west-2'

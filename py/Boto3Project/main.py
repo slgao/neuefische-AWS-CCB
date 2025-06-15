@@ -18,20 +18,20 @@ from rds import RDS
 def main():
     config = Config()
 
-    ec2 = EC2()
-    ec2 = ec2.get_client()
+    ec2 = EC2(config)
+    ec2_client = ec2.get_client()
 
     # VPC Operations
     # create a VPC
     vpc = VPC()
-    vpc.set_client(ec2)
+    vpc.set_client(ec2_client)
     vpc_id = vpc.create_vpc(cidr_block=config.vpc_cidr)
     vpc.create_tags(vpc_name=config.vpc_name)
     vpc.enable_DNS()
 
     # Subnet Operations
     subnet = Subnet(config)
-    subnet.set_client(ec2)
+    subnet.set_client(ec2_client)
     public_subnet_names = [config.public_subnet1_name, config.public_subnet2_name]
     private_subnet_names = [config.private_subnet1_name, config.private_subnet2_name]
     azs = [config.az, config.az2]
@@ -67,14 +67,14 @@ def main():
 
     # Internet Gateway Operations
     igw = InternetGateway(config)
-    igw.set_client(ec2)
+    igw.set_client(ec2_client)
     igw.create_internet_gateway()
     igw.create_tags()
     igw.attach_internet_gateway(vpc_id)
 
     # Route Table Operations
     rt = RouteTable(config)
-    rt.set_client(ec2)
+    rt.set_client(ec2_client)
     # create route table for public subnet
     public_route_table_id = rt.create_route_table(vpc_id)
     # create tags for public route table
@@ -88,12 +88,21 @@ def main():
     )
 
     # Security Group Operations
-    # Create security groups
+    # Create security groups for EC2 instance -- allow SSH access
     sg = SecurityGroup(config)
-    sg.set_client(ec2)
+    sg.set_client(ec2_client)
     sg.create_security_group(config.security_group_name, vpc_id)
     sg.authorize_securtiy_group(port=config.ssh_port, description="Allow SSH access")
     sg.create_tags()
+
+    # EC2 instance Operations
+    # Create key pair for EC2 instance
+    ec2.create_and_download_key_pair()
+    # Run EC2 instance in public subnet
+    ec2.run_instances(
+        security_group_ids=[sg.security_group_id],
+        subnet_id=config.subnet_ids[config.public_subnet1_name]
+    )
 
     # RDS Operations
     rds = RDS(config)
