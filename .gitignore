@@ -1,0 +1,37 @@
+# Ignore Python specific files
+__pycache__/
+*.pyc
+.env  # Environment variables file
+.venv/  # Python virtual environment
+
+# Ignore compiled files and build artifacts
+dist/
+build/
+target/ # For Java or other compiled languages
+
+# Ignore log files
+*.log
+
+# Ignore IDE specific files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Ignore temporary files and system files
+*.tmp
+*.bak
+.DS_Store  # macOS system file
+Thumbs.db  # Windows system file
+
+# Optional: Ignore sensitive configuration files (be cautious with this)
+# config.ini 
+
+# Ignore .terraform folder
+**/.terraform
+terraform.tfstate
+terraform.tfstate.backup
+
+# Ignore Emacs undo tree files
+*.~undo-tree~
+
